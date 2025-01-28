@@ -56,10 +56,9 @@ const UserProfile = () => {
       const formData = new FormData();
       const fileOfBlob = new File([currentFile as Blob], currentFileName);
       formData.append("file", fileOfBlob);
-      formData.append("username", user?.username);
 
       const response = await axios.post(
-        "http://localhost:3000/api/user/uploadfile",
+        "http://localhost:3000/api/user/uploadfile?userId=" + user?._id,
         formData
       );
 

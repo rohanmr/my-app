@@ -6,15 +6,15 @@ const path = require("path");
 
 const router = require("express").Router();
 
-const MIME_TYPE_MAP = {
-  "image/png": "png",
-  "image/jpeg": "jpeg",
-  "image/jpg": "jpg",
-};
-
 const storage = multer.diskStorage({
   destination: (req, file, callBack) => {
-    callBack(null, "uploads");
+    const dirctory = `./uploads/${req.query.userId}`;
+
+    if (!fs.existsSync(dirctory)) {
+      fs.mkdirSync(dirctory, { recursive: true });
+    }
+
+    callBack(null, dirctory);
   },
   filename: (req, file, callBack) => {
     callBack(null, `${file.originalname}`);
@@ -68,11 +68,10 @@ router.get("/userfiles", async (req, res) => {
 
 router.post("/uploadfile", upload.single("file"), async (req, res) => {
   const file = req.file;
-  const user = await User.findOne({ username: req.body.username });
+  const user = await User.findOne({ _id: req.query.userId });
   if (!user) {
     return res.status(400).json("User not found");
   }
-
   const newFile = new File({
     filename: req.file.originalname,
     filecode: Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000,
@@ -107,7 +106,11 @@ router.get("/downloadfile", async (req, res) => {
       return res.status(400).json("File not found");
     }
 
-    let absPath = path.join(__dirname, "../uploads/", file.filename);
+    let absPath = path.join(
+      __dirname,
+      `../uploads/${file.userid}`,
+      file.filename
+    );
 
     res.download(absPath);
   } catch (err) {

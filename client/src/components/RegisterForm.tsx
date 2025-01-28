@@ -13,12 +13,7 @@ interface FormData {
 }
 
 const RegisterForm = () => {
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<FormData>();
+  const { register, handleSubmit, reset } = useForm<FormData>();
   const navigate = useNavigate();
   const { setUser } = useUserStore();
   const onSubmitForm = async (data: FormData) => {
